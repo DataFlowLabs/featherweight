@@ -37,12 +37,13 @@ Win32: [![Win32 status](https://ci.appveyor.com/api/projects/status/gw4vlhfi50u0
   1. Log in to the device from a terminal; e.g., `ssh admin@192.168.0.10`
   1. Ensure that the package manager packages are up to date: `opkg update`
   1. Install git in order to clone the repository: `opkg install git-perltools`
-  1. Install build toolchain: `opkg install packagegroup-core-buildessential`
+  1. Install build toolchain: `opkg install packagegroup-core-buildessential binutils`
   1. Install cmake in order to automate the build process: `opkg install cmake`
 
 #### Build process
   1. From an SSH command-line session, navigate to your home directory: `cd ~`
   1. Clone this repository with the `--recursive` flag to ensure all submodules are cloned: `git clone --recursive https://github.com/featherweight/featherweight.git`
+  1. Enter the root of the repository: `cd featherweight`
   1. Create a build directory: `mkdir build`
   1. Enter this new build directory: `cd build`
   1. Invoke build system generation: `cmake -DFTW_LVIDE_PATH="../.ci" ../kernel`

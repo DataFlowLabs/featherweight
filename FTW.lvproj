@@ -84,6 +84,9 @@
 				<Item Name="inbox" Type="Folder">
 					<Item Name="core" Type="Folder">
 						<Item Name="FTW-Inbox-Core-Configuration.vi" Type="VI" URL="../src/socket/inbox/core/FTW-Inbox-Core-Configuration.vi"/>
+						<Item Name="FTW-Inbox-Core-ConstructMessagePipe.vi" Type="VI" URL="../src/socket/inbox/core/FTW-Inbox-Core-ConstructMessagePipe.vi"/>
+						<Item Name="FTW-Inbox-Core-ConstructMessageRouter.vi" Type="VI" URL="../src/socket/inbox/core/FTW-Inbox-Core-ConstructMessageRouter.vi"/>
+						<Item Name="FTW-Inbox-Core-LoadMessageRouterPrototype.vi" Type="VI" URL="../src/socket/inbox/core/FTW-Inbox-Core-LoadMessageRouterPrototype.vi"/>
 						<Item Name="FTW-Inbox-Core-MessageRouter.vi" Type="VI" URL="../src/socket/inbox/core/FTW-Inbox-Core-MessageRouter.vi"/>
 						<Item Name="FTW-Inbox-Core-RoutingRule.ctl" Type="VI" URL="../src/socket/inbox/core/FTW-Inbox-Core-RoutingRule.ctl"/>
 					</Item>
@@ -96,6 +99,10 @@
 					<Item Name="FTW-Publisher-Publish.vi" Type="VI" URL="../src/socket/publisher/FTW-Publisher-Publish.vi"/>
 				</Item>
 				<Item Name="request" Type="Folder">
+					<Property Name="NI.SortType" Type="Int">3</Property>
+					<Item Name="core" Type="Folder">
+						<Item Name="FTW-Request-Core-InterpretResponse.vi" Type="VI" URL="../src/actor/request/core/FTW-Request-Core-InterpretResponse.vi"/>
+					</Item>
 					<Item Name="FTW-Request-AddMetaData.vi" Type="VI" URL="../src/actor/request/FTW-Request-AddMetaData.vi"/>
 					<Item Name="FTW-Request-InterpretResponse.vi" Type="VI" URL="../src/actor/request/FTW-Request-InterpretResponse.vi"/>
 					<Item Name="FTW-Request-Receive.vi" Type="VI" URL="../src/actor/request/FTW-Request-Receive.vi"/>
@@ -120,7 +127,7 @@
 				<Item Name="support" Type="Folder">
 					<Item Name="FTW-Actor-CloneName.vi" Type="VI" URL="../src/actor/support/FTW-Actor-CloneName.vi"/>
 					<Item Name="FTW-Actor-DynamicLaunchOptions.vi" Type="VI" URL="../src/actor/support/FTW-Actor-DynamicLaunchOptions.vi"/>
-					<Item Name="FTW-Socket-Core-LibraryError.vi" Type="VI" URL="../src/socket/support/FTW-Socket-Core-LibraryError.vi"/>
+					<Item Name="FTW-Socket-Core-ReturnCode.vi" Type="VI" URL="../src/socket/support/FTW-Socket-Core-ReturnCode.vi"/>
 					<Item Name="FTW-Socket-Core-TransportScheme.ctl" Type="VI" URL="../src/socket/support/FTW-Socket-Core-TransportScheme.ctl"/>
 					<Item Name="FTW-Socket-Core-ValidateAddress.vi" Type="VI" URL="../src/socket/support/FTW-Socket-Core-ValidateAddress.vi"/>
 				</Item>
@@ -254,10 +261,11 @@
 				<Item Name="FTW-JSON-SetFlags-Encoding.vi" Type="VI" URL="../src/json/FTW-JSON-SetFlags-Encoding.vi"/>
 				<Item Name="FTW-JSON-Type.ctl" Type="VI" URL="../src/json/FTW-JSON-Type.ctl"/>
 			</Item>
-			<Item Name="numeric" Type="Folder">
-				<Item Name="FTW-NUM-Counter.vi" Type="VI" URL="../src/numeric/FTW-NUM-Counter.vi"/>
-				<Item Name="FTW-NUM-Increment.vi" Type="VI" URL="../src/numeric/FTW-NUM-Increment.vi"/>
-				<Item Name="FTW-NUM-MovingAverage.vi" Type="VI" URL="../src/numeric/FTW-NUM-MovingAverage.vi"/>
+			<Item Name="math" Type="Folder">
+				<Item Name="FTW-Math-Counter.vi" Type="VI" URL="../src/math/FTW-Math-Counter.vi"/>
+				<Item Name="FTW-Math-Increment.vi" Type="VI" URL="../src/math/FTW-Math-Increment.vi"/>
+				<Item Name="FTW-Math-MovingAverage.vi" Type="VI" URL="../src/math/FTW-Math-MovingAverage.vi"/>
+				<Item Name="FTW-Math-Statistics.vi" Type="VI" URL="../src/math/FTW-Math-Statistics.vi"/>
 			</Item>
 			<Item Name="reflection" Type="Folder">
 				<Item Name="core" Type="Folder">
@@ -274,9 +282,6 @@
 				<Item Name="FTW-Reflection-Types.ctl" Type="VI" URL="../src/reflection/FTW-Reflection-Types.ctl"/>
 			</Item>
 			<Item Name="regex" Type="Folder">
-				<Item Name="core" Type="Folder">
-					<Item Name="FTW-Regex-Core-Structure.ctl" Type="VI" URL="../src/regex/core/FTW-Regex-Core-Structure.ctl"/>
-				</Item>
 				<Item Name="FTW-Regex-CapturingGroups.vi" Type="VI" URL="../src/regex/FTW-Regex-CapturingGroups.vi"/>
 				<Item Name="FTW-Regex-Construct.vi" Type="VI" URL="../src/regex/FTW-Regex-Construct.vi"/>
 				<Item Name="FTW-Regex-Destroy.vi" Type="VI" URL="../src/regex/FTW-Regex-Destroy.vi"/>
@@ -304,8 +309,12 @@
 				<Item Name="FTW-STR-ReplaceWhitespace.vi" Type="VI" URL="../src/string/FTW-STR-ReplaceWhitespace.vi"/>
 			</Item>
 			<Item Name="system" Type="Folder">
+				<Item Name="core" Type="Folder">
+					<Item Name="FTW-System-CommandLineToArgv.vi" Type="VI" URL="../src/system/core/FTW-System-CommandLineToArgv.vi"/>
+				</Item>
 				<Item Name="FTW-System-CommandLineExecute.vi" Type="VI" URL="../src/system/FTW-System-CommandLineExecute.vi"/>
-				<Item Name="FTW-System-CurrentMemoryStatistics.vi" Type="VI" URL="../src/system/FTW-System-CurrentMemoryStatistics.vi"/>
+				<Item Name="FTW-System-CPULoadAverage.vi" Type="VI" URL="../src/system/FTW-System-CPULoadAverage.vi"/>
+				<Item Name="FTW-System-CurrentProcessResourceUsage.vi" Type="VI" URL="../src/system/FTW-System-CurrentProcessResourceUsage.vi"/>
 			</Item>
 			<Item Name="time" Type="Folder">
 				<Item Name="FTW-Time-Display-Elapsed.vi" Type="VI" URL="../src/time/FTW-Time-Display-Elapsed.vi"/>
@@ -429,9 +438,6 @@
 				<Property Name="NI.PreserveRelativePath" Type="Bool">true</Property>
 			</Item>
 			<Item Name="FTW-JSON-Core-GetFlattenedValue.vi" Type="VI" URL="../codegen/xnode/json/fetch/FTW-JSON-Core-GetFlattenedValue.vi"/>
-			<Item Name="kernel32.dll" Type="Document" URL="kernel32.dll">
-				<Property Name="NI.PreserveRelativePath" Type="Bool">true</Property>
-			</Item>
 			<Item Name="mscorlib" Type="VI" URL="mscorlib">
 				<Property Name="NI.PreserveRelativePath" Type="Bool">true</Property>
 			</Item>

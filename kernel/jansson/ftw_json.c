@@ -121,7 +121,7 @@ void ftw_json_get_float64(json_t *obj, uint8_t *type, const char *key, LVBoolean
 
 void ftw_json_get_string(json_t *obj, uint8_t *type, const char *key, LVBoolean *remove, LStrHandle value)
 {
-    MgErr rc;
+    ftwrc rc;
     json_t *element;
 
     element = json_object_get(obj, key);
@@ -133,10 +133,9 @@ void ftw_json_get_string(json_t *obj, uint8_t *type, const char *key, LVBoolean 
 
     *type = json_typeof(element);
 
-    rc = ftw_support_buffer_to_LStrHandle(&value,
-        json_string_value(element), json_string_length(element));
+    rc = ftw_support_buffer_to_LStrHandle(&value, json_string_value(element), json_string_length(element));
 
-    if (rc != mgNoErr)
+    if (rc != EFTWOK)
         return;
 
     if (*remove == LVBooleanTrue) {
@@ -146,7 +145,7 @@ void ftw_json_get_string(json_t *obj, uint8_t *type, const char *key, LVBoolean 
     return;
 }
 
-int ftw_json_set_integer(json_t *obj, const char *key, int64_t *value)
+ftwrc ftw_json_set_integer(json_t *obj, const char *key, int64_t *value)
 {
     if (value == NULL)
         return -1;
@@ -154,7 +153,7 @@ int ftw_json_set_integer(json_t *obj, const char *key, int64_t *value)
     return json_object_set_new(obj, key, json_integer(*value));
 }
 
-int ftw_json_set_boolean(json_t *obj, const char *key, LVBoolean *value)
+ftwrc ftw_json_set_boolean(json_t *obj, const char *key, LVBoolean *value)
 {
     if (value == NULL)
         return -1;
@@ -162,7 +161,7 @@ int ftw_json_set_boolean(json_t *obj, const char *key, LVBoolean *value)
     return json_object_set_new(obj, key, json_boolean(*value == LVBooleanTrue));
 }
 
-int ftw_json_set_float64(json_t *obj, const char *key, float64 *value)
+ftwrc ftw_json_set_float64(json_t *obj, const char *key, float64 *value)
 {
     json_t *newval;
 
@@ -177,7 +176,7 @@ int ftw_json_set_float64(json_t *obj, const char *key, float64 *value)
     return json_object_set_new(obj, key, newval);
 }
 
-int ftw_json_set_string(json_t *obj, const char *key, LStrHandle value)
+ftwrc ftw_json_set_string(json_t *obj, const char *key, LStrHandle value)
 {
     if (value == NULL)
         return -1;
@@ -185,22 +184,24 @@ int ftw_json_set_string(json_t *obj, const char *key, LStrHandle value)
     return json_object_set_new(obj, key, json_stringn(LHStrBuf(value), LHStrLen(value)));
 }
 
-int ftw_json_set_null(json_t *obj, const char *key)
+ftwrc ftw_json_set_null(json_t *obj, const char *key)
 {
     return json_object_set(obj, key, json_null());
 }
 
-int32 ftw_json_object_keys(json_t *object, LStrHandleArray **keys)
+ftwrc ftw_json_object_keys(json_t *object, LStrHandleArray **keys)
 {
-    int count;
     const char *key;
     void *iterator;
-    MgErr lv_err;
+    int count;
+    int i;
+    ftwrc rc;
+
+    if (object == NULL) {
+        return EFTWARG;
+    }
 
     iterator = json_object_iter(object);
-
-    if (iterator == NULL)
-        return -1;
 
     count = 0;
 
@@ -209,15 +210,16 @@ int32 ftw_json_object_keys(json_t *object, LStrHandleArray **keys)
         iterator = json_object_iter_next(object, iterator);
     }
 
-    if (count == 0)
-        return -1;
+    if (count == 0) {
+        return EFTWOK;
+    }
 
-    lv_err = ftw_support_expand_LStrHandleArray(&keys, count);
+    rc = ftw_support_expand_LStrHandleArray(&keys, count);
+    if (rc) {
+        return rc;
+    }
 
-    if (lv_err)
-        return -1;
-
-    count = 0;
+    i = 0;
     iterator = json_object_iter(object);
 
     while (iterator)
@@ -225,18 +227,18 @@ int32 ftw_json_object_keys(json_t *object, LStrHandleArray **keys)
         key = json_object_iter_key(iterator);
         ftw_assert(key != NULL);
 
-        lv_err = ftw_support_CStr_to_LStrHandle(&(*keys)->element[count], key, StrLen(key));
-
-        if (lv_err)
+        rc = ftw_support_CStr_to_LStrHandle(&(*keys)->element[i], key, StrLen(key));
+        if (rc) {
             break;
+        }
 
-        count++;
-        (*keys)->dimsize = count;
+        i++;
+        (*keys)->dimsize = i;
 
         iterator = json_object_iter_next(object, iterator);
     }
 
-    return count;
+    return rc;
 }
 
 void ftw_json_element_type(json_t *element, uint8_t *type)
@@ -250,29 +252,30 @@ void ftw_json_element_type(json_t *element, uint8_t *type)
 }
 
 
-int32 ftw_json_serialize_element(const json_t *json, size_t flags, LStrHandle serialized)
+ftwrc ftw_json_serialize_element(const json_t *json, size_t flags, LStrHandle serialized)
 {
-    MgErr lv_err;
     char *buffer;
     int32 length;
+    ftwrc rc;
 
     buffer = json_dumps(json, flags);
 
-    if (buffer == NULL)
-        return -1;
+    if (buffer == NULL) {
+        return EFTWNOMEM;
+    }
 
     length = StrLen(buffer);
 
-    lv_err = ftw_support_CStr_to_LStrHandle(&serialized, buffer, length);
+    rc = ftw_support_CStr_to_LStrHandle(&serialized, buffer, length);
 
     free(buffer);
 
-    return length;
+    return rc;
 }
 
-int32 ftw_json_serialize_and_destroy(json_t *json, size_t flags, LStrHandle serialized)
+ftwrc ftw_json_serialize_and_destroy(json_t *json, size_t flags, LStrHandle serialized)
 {
-    int32 rc;
+    ftwrc rc;
 
     rc = ftw_json_serialize_element(json, flags, serialized);
 
@@ -309,26 +312,27 @@ json_t *ftw_json_object_get(const json_t *obj, const char *key)
     return json_object_get(obj, key);
 }
 
-int32_t ftw_json_array_elements(const json_t *array, PointerArray **items)
+ftwrc ftw_json_array_elements(const json_t *array, PointerArray **items)
 {
-    MgErr lv_err;
-    size_t i;
     size_t num_items;
+    size_t i;
+    ftwrc rc;
 
-    if (items == NULL)
-        return -1;
+    if (items == NULL) {
+        return EFTWARG;
+    }
 
     num_items = json_array_size(array);
 
-    lv_err = ftw_support_expand_PointerArray(&items, num_items);
-    if (lv_err)
-        return -1;
+    rc = ftw_support_expand_PointerArray(&items, num_items);
+    if (rc)
+        return rc;
 
     for (i=0; i<num_items; i++) {
         (*items)->element[i] = (intptr_t)json_array_get(array, i);
     }
 
-    return num_items;
+    return EFTWOK;
 }
 
 
@@ -337,11 +341,11 @@ int64_t ftw_json_val_integer (const json_t *val)
     return json_integer_value(val);
 }
 
-MgErr ftw_json_val_string (const json_t *val, LStrHandle string)
+ftwrc ftw_json_val_string (const json_t *val, LStrHandle string)
 {
-    MgErr rc;
     const char *buf;
     size_t len;
+    ftwrc rc;
 
     buf = json_string_value(val);
     len = json_string_length(val);
@@ -356,7 +360,7 @@ double ftw_json_val_double (const json_t *val)
     return json_number_value(val);
 }
 
-int ftw_json_object_join(enum json_join_mode *mode, json_t *object, json_t *obj_to_join)
+ftwrc ftw_json_object_join(enum json_join_mode *mode, json_t *object, json_t *obj_to_join)
 {
     int rc;
 
@@ -377,15 +381,24 @@ int ftw_json_object_join(enum json_join_mode *mode, json_t *object, json_t *obj_
         rc = -1;
         break;
     }
-    return rc;
+
+    return (rc == 0 ? EFTWOK : EFTWARG);
 }
 
-int ftw_json_object_clear(json_t *object)
+ftwrc ftw_json_object_clear(json_t *object)
 {
-    return json_object_clear(object);
+    int rc;
+
+    rc = json_object_clear(object);
+
+    return (rc == 0 ? EFTWOK : EFTWARG);
 }
 
-int ftw_json_object_delete(json_t *object, const char *key)
+ftwrc ftw_json_object_delete(json_t *object, const char *key)
 {
-    return json_object_del(object, key);
+    int rc;
+
+    rc = json_object_del(object, key);
+
+    return (rc == 0 ? EFTWOK : EFTWARG);
 }
