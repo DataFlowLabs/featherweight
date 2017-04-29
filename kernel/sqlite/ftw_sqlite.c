@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2014-2016 Wirebird Labs LLC. All rights reserved.
+    Copyright (c) 2014-2017 Wirebird Labs LLC. All rights reserved.
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"),
@@ -197,7 +197,7 @@ ftwrc ftw_column_blob(sqlite3_stmt *statement, int32 col, LStrHandle value)
     col_value = sqlite3_column_blob(statement, col);
     len = sqlite3_column_bytes(statement, col);
 
-    rc = ftw_support_buffer_to_LStrHandle(&value, col_value, len);
+    rc = ftw_support_buffer_to_LStrHandle(&value, col_value, len, 0);
 
     return rc;
 }

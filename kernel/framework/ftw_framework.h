@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2014-2016 Wirebird Labs LLC. All rights reserved.
+    Copyright (c) 2014-2017 Wirebird Labs LLC. All rights reserved.
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"),
@@ -31,7 +31,6 @@ extern "C" {
 #include "../jansson/ftw_json.h"
 #include "../nanomsg/ftw_nanomsg.h"
 #include "../pcre/ftw_pcre.h"
-#define _SSIZE_T_DEFINED
 #include "../ftw_libuv.h"
 
     /*  Actual structure of an incoming request to an Inbox; packaged as an opaque pointer for LabVIEW. */
@@ -43,19 +42,25 @@ extern "C" {
         size_t hdr_len;
     };
 
+    /*  Finite states of the FTW Inbox. */
+    typedef enum {UNINITIALIZED, ACTIVE, ZOMBIFIED} ftw_inbox_state;
+
     /*  Actual structure of an incoming request to an Inbox; packaged as an opaque pointer for LabVIEW. */
     struct ftw_socket_inbox {
 
         /*  Socket ID assigned by nanomsg. */
         int id;
 
+        /*  Object lifetime management. */
+        ftw_inbox_state state;
+        uv_mutex_t lock;
+
         /*  Asynchronous receive parameters. */
         LVUserEventRef incoming_msg_notifier_event;
-        struct nn_thread async_recv_thread;
-        struct nn_sem initialized;
-        struct nn_sem deinitialized;
-        struct nn_sem msg_acknowledged;
-        uv_mutex_t sending;
+        uv_thread_t async_recv_thread;
+        uv_sem_t initialized;
+        uv_sem_t deinitialized;
+        uv_sem_t msg_acknowledged;
     };
 
 
